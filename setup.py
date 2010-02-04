@@ -8,6 +8,13 @@ setup(
 
     description="python -m wget <URL>",
     license="Public Domain",
+    classifiers=[
+        'Environment :: Console',
+        'License :: Public Domain',
+        'Operating System :: OS Independent',
+        'Topic :: System :: Networking',
+        'Topic :: Utilities',
+    ],
 
     py_modules=['wget'],
 )
