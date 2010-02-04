@@ -1,13 +1,13 @@
 """
 The sole purpose of this module to provide easy to remember way of downloading
-files with out of the box Python installation:
+files with out-of-the-box Python installation:
 
     python -m wget <URL>
 
 
 This module should probably be renamed to something else before incorporated
-into Puthon library to avoid complains about missing options, but it is hard
-to invent something more intuitive.
+into Python library to avoid complains about missing options, but it is hard
+to invent something more intuitive (like 'fetch').
 """
 
 import sys, urllib, shutil, os
