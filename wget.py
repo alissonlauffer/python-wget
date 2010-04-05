@@ -17,7 +17,7 @@ version = "0.3dev"
 
 
 def filename_from_url(url):
-    """return detected filename or None"""
+    """:return: detected filename or None"""
     fname = os.path.basename(urlparse.urlparse(url).path)
     if len(fname.strip(" \n\t.")) == 0:
         return None
