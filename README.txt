@@ -9,6 +9,9 @@ Release Checklist
 
 ChangeLog
 =========
+0.3 (2010-04-05)
+ * it creates temp file in current dir
+
 0.2 (2010-02-16)
  * it tries to detect filename from URL
 

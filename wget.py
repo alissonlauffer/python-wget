@@ -11,9 +11,10 @@ to invent something more intuitive (like 'fetch').
 """
 
 import sys, urllib, shutil, os, urlparse
+import tempfile
 
 
-version = "0.3dev"
+version = "0.3"
 
 
 def filename_from_url(url):
@@ -31,12 +32,13 @@ if __name__ == "__main__":
     url = sys.argv[1]
 
     filename = filename_from_url(url) or "."
-
-    (tmpfile, headers) = urllib.urlretrieve(url)
-    # copy tmpfile, because it will be destroyed on exit
-    shutil.copy(tmpfile, filename)
+    # get filename for temp file in current directory
+    (tf, tmpfile) = tempfile.mkstemp(".tmp", prefix=filename+".", dir=".")
+    os.fdopen(tf).close()
     os.unlink(tmpfile)
 
+    (tmpfile, headers) = urllib.urlretrieve(url, tmpfile)
+    shutil.move(tmpfile, filename)
 
     print headers
     print "Saved under %s" % os.path.basename(filename)
@@ -50,12 +52,15 @@ http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
     http://greenbytes.de/tech/tc2231/
 [ ] catch KeyboardInterrupt
 [ ] optionally preserve incomplete file
-[ ] start downloading directly into current directory to save incomplete file
+[x] create temp file in current directory
+[ ] rename temp file automatically if exists
 [ ] resume download (broken connection)
 [ ] resume download (incomplete file)
 [ ] show progress indicator
     http://mail.python.org/pipermail/tutor/2005-May/038797.html
 [ ] do not overwrite downloaded file
+[ ] optionally rename downloaded file automatically if exists
+[ ] optionally specify path for downloaded file
 
 [ ] options plan
 """
