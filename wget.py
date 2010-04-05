@@ -13,13 +13,8 @@ to invent something more intuitive (like 'fetch').
 import sys, urllib, shutil, os, urlparse
 
 
-version = "0.2"
+version = "0.3dev"
 
-
-if len(sys.argv) < 2:
-    sys.exit("No download URL specified")
-
-url = sys.argv[1]
 
 def filename_from_url(url):
     """return detected filename or None"""
@@ -27,31 +22,40 @@ def filename_from_url(url):
     if len(fname.strip(" \n\t.")) == 0:
         return None
     return fname
-                 
-filename = filename_from_url(url) or "."
-
-(tmpfile, headers) = urllib.urlretrieve(url)
-# copy tmpfile, because it will be destroyed on exit
-shutil.copy(tmpfile, filename)
-os.unlink(tmpfile)
 
 
-print headers
-print "Saved under %s" % os.path.basename(filename)
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        sys.exit("No download URL specified")
+
+    url = sys.argv[1]
+
+    filename = filename_from_url(url) or "."
+
+    (tmpfile, headers) = urllib.urlretrieve(url)
+    # copy tmpfile, because it will be destroyed on exit
+    shutil.copy(tmpfile, filename)
+    os.unlink(tmpfile)
+
+
+    print headers
+    print "Saved under %s" % os.path.basename(filename)
 
 """
 features that require more tuits for urlretrieve API
-http://www.python.org/2.6/library/urllib.html#urllib.urlretrieve
+http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
 
 [x] autodetect filename from URL
 [ ] autodetect filename from headers - Content-Disposition
     http://greenbytes.de/tech/tc2231/
 [ ] catch KeyboardInterrupt
-[ ] optionally preserve incomplete file and notify about its location
+[ ] optionally preserve incomplete file
 [ ] start downloading directly into current directory to save incomplete file
-[ ] resume download (broken download)
+[ ] resume download (broken connection)
 [ ] resume download (incomplete file)
 [ ] show progress indicator
     http://mail.python.org/pipermail/tutor/2005-May/038797.html
 [ ] do not overwrite downloaded file
+
+[ ] options plan
 """
