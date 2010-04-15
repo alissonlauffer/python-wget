@@ -9,6 +9,9 @@ Release Checklist
 
 ChangeLog
 =========
+0.4 (2010-04-16)
+ * it shows cute progress bar
+
 0.3 (2010-04-05)
  * it creates temp file in current dir
 

@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='wget',
-    version='0.3',
+    version='0.4',
     author='anatoly techtonik <techtonik@gmail.com>',
     url='http://bitbucket.org/techtonik/python-wget/',
 
