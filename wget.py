@@ -108,8 +108,8 @@ if __name__ == "__main__":
 
     filename = filename_from_url(url) or "."
     # get filename for temp file in current directory
-    (tf, tmpfile) = tempfile.mkstemp(".tmp", prefix=filename+".", dir=".")
-    os.fdopen(tf).close()
+    (fd, tmpfile) = tempfile.mkstemp(".tmp", prefix=filename+".", dir=".")
+    os.close(fd)
     os.unlink(tmpfile)
 
     (tmpfile, headers) = urllib.urlretrieve(url, tmpfile, progress_callback)
