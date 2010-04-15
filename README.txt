@@ -5,11 +5,13 @@ Release Checklist
 [ ] update version in wget.py
 [ ] python setup.py sdist
 [ ] python setup.py upload
+[ ] update ChangeLog on PyPI
+[ ] update ChangeLog on BitBucket Wiki
 
 
 ChangeLog
 =========
-0.4 (2010-04-16)
+0.4 (2010-04-15)
  * it shows cute progress bar
 
 0.3 (2010-04-05)
