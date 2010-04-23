@@ -11,6 +11,9 @@ Release Checklist
 
 ChangeLog
 =========
+0.5 (2010-04-23)
+ * it detects console width on Windows
+
 0.4 (2010-04-15)
  * it shows cute progress bar
 
