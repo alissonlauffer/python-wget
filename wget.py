@@ -1,13 +1,20 @@
-"""
-The sole purpose of this module to provide easy to remember way of downloading
-files with out-of-the-box Python installation:
-
+""" Download utility as easy way to get file from internet
+ 
     python -m wget <URL>
+    python wget.py <URL>
+
+    Placed into Public Domain by anatoly techtonik
+    Also available under the terms of MIT license if you need
+    Copyright (c) 2010 anatoly techtonik <techtonik@gmail.com>
+
+    Downloads: http://pypi.python.org/pypi/wget/
+    Development: http://bitbucket.org/techtonik/python-wget/
 
 
-This module should probably be renamed to something else before incorporated
-into Python library to avoid complains about missing options, but it is hard
-to invent something more intuitive (like 'fetch').
+    If this module will be included into Python library, it
+    is better be renamed to something like 'fetch' to avoid
+    complains about missing options.
+
 """
 
 import sys, urllib, shutil, os, urlparse
