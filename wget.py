@@ -66,8 +66,10 @@ def get_console_width():
                         ("dwMaximumWindowSize", DWORD)]
 
         sbi = CONSOLE_SCREEN_BUFFER_INFO()
-        windll.kernel32.GetConsoleScreenBufferInfo(console_handle, byref(sbi))
-        return (sbi.srWindow.Right+1, sbi.srWindow.Bottom+1)[0]
+        ret = windll.kernel32.GetConsoleScreenBufferInfo(console_handle, byref(sbi))
+        if ret == 0:
+            return 0
+        return sbi.srWindow.Right+1
 
     elif os.name == 'posix':
         from fcntl import ioctl
@@ -75,7 +77,10 @@ def get_console_width():
         from array import array
 
         winsize = array("H", [0] * 4)
-        ioctl(sys.stdout.fileno(), TIOCGWINSZ, winsize)
+        try:
+            ioctl(sys.stdout.fileno(), TIOCGWINSZ, winsize)
+        except IOError:
+            pass
         return (winsize[1], winsize[0])[0]
 
     return 80
