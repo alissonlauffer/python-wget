@@ -11,6 +11,9 @@ Release Checklist
 
 ChangeLog
 =========
+0.6 (2010-04-24)
+ * it detects console width on POSIX
+
 0.5 (2010-04-23)
  * it detects console width on Windows
 

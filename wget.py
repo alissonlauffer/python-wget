@@ -22,7 +22,7 @@ import tempfile
 import math
 
 
-version = "0.5"
+version = "0.6"
 
 
 def filename_from_url(url):
@@ -34,8 +34,8 @@ def filename_from_url(url):
 
 
 def get_console_width():
-    """Return width of available window area. Autodetection only works
-       on Windows, returns 80 for other platforms
+    """Return width of available window area. Autodetection works for
+       Windows and POSIX platforms. Returns 80 for others
 
        Code from http://bitbucket.org/techtonik/python-pager
     """
@@ -68,6 +68,15 @@ def get_console_width():
         sbi = CONSOLE_SCREEN_BUFFER_INFO()
         windll.kernel32.GetConsoleScreenBufferInfo(console_handle, byref(sbi))
         return (sbi.srWindow.Right+1, sbi.srWindow.Bottom+1)[0]
+
+    elif os.name == 'posix':
+        from fcntl import ioctl
+        from termios import TIOCGWINSZ
+        from array import array
+
+        winsize = array("H", [0] * 4)
+        ioctl(sys.stdout.fileno(), TIOCGWINSZ, winsize)
+        return (winsize[1], winsize[0])[0]
 
     return 80
 
