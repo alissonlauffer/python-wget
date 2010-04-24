@@ -1,14 +1,3 @@
-Release Checklist
-=================
-
-[ ] update version in setup.py
-[ ] update version in wget.py
-[ ] python setup.py sdist
-[ ] python setup.py upload
-[ ] update ChangeLog on PyPI
-[ ] update ChangeLog on BitBucket Wiki
-
-
 ChangeLog
 =========
 0.6 (2010-04-24)
@@ -28,6 +17,17 @@ ChangeLog
 
 0.1 (2010-02-04)
  * it can download file
+
+
+Release Checklist
+=================
+
+[ ] update version in setup.py
+[ ] update version in wget.py
+[ ] update ChangeLog in setup.py
+[ ] python setup.py sdist
+[ ] python setup.py upload
+[ ] update ChangeLog on BitBucket Wiki
 
 -- 
 anatoly techtonik <techtonik@gmail.com>
