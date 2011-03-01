@@ -31,7 +31,6 @@ Release Checklist
 [ ] update ChangeLog in setup.py
 [ ] python setup.py sdist
 [ ] python setup.py upload
-[ ] update ChangeLog on BitBucket Wiki
 
 -- 
 anatoly techtonik <techtonik@gmail.com>
