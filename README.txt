@@ -1,5 +1,8 @@
 ChangeLog
 =========
+0.7 (2011-03-01)
+ * compatibility fix for Python 2.5
+
 0.6 (2010-04-24)
  * it detects console width on POSIX
 

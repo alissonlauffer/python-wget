@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='wget',
-    version='0.6',
+    version='0.7',
     author='anatoly techtonik <techtonik@gmail.com>',
     url='http://bitbucket.org/techtonik/python-wget/',
 
@@ -21,6 +21,9 @@ setup(
     long_description= """
 ChangeLog
 =========
+0.7 (2011-03-01)
+ * compatibility fix for Python 2.5
+
 0.6 (2010-04-24)
  * it detects console width on POSIX
 
