@@ -109,7 +109,7 @@ def progress_callback(blocks, block_size, total_size):
     :param block_size: in bytes
     :param total_size: in bytes, can be -1 if server doesn't return it
     """
-    width = get_console_width()
+    width = min(100, get_console_width())
     size_width = len("%s" % total_size)
     size_field_width = size_width*2 + 3 # 'xxxx / yyyy'
     min_bar_width = 3 # [.]
