@@ -49,7 +49,7 @@ def get_console_width():
         from ctypes import windll, Structure, byref
         try:
             from ctypes.wintypes import SHORT, WORD, DWORD
-        except:
+        except ImportError:
             # workaround for missing types in Python 2.5
             from ctypes import (
                 c_short as SHORT, c_ushort as WORD, c_ulong as DWORD)
