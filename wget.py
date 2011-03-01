@@ -47,7 +47,12 @@ def get_console_width():
 
         # get console handle
         from ctypes import windll, Structure, byref
-        from ctypes.wintypes import SHORT, WORD, DWORD
+        try:
+            from ctypes.wintypes import SHORT, WORD, DWORD
+        except:
+            # workaround for missing types in Python 2.5
+            from ctypes import (
+                c_short as SHORT, c_ushort as WORD, c_ulong as DWORD)
         console_handle = windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
 
         # CONSOLE_SCREEN_BUFFER_INFO Structure
