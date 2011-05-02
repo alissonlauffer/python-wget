@@ -22,7 +22,7 @@ import tempfile
 import math
 
 
-version = "0.7"
+__version__ = "0.8dev"
 
 
 def filename_from_url(url):
