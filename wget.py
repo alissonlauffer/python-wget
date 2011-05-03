@@ -22,7 +22,7 @@ import tempfile
 import math
 
 
-__version__ = "0.8"
+__version__ = "0.9dev"
 
 
 def filename_from_url(url):
@@ -216,6 +216,8 @@ http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
 [x] autodetect filename from headers - Content-Disposition
     http://greenbytes.de/tech/tc2231/
 [ ] make HEAD request to detect temp filename from Content-Disposition
+[ ] process HTTP status codes (i.e. 404 error)
+    http://ftp.de.debian.org/debian/pool/iso-codes_3.24.2.orig.tar.bz2
 [ ] catch KeyboardInterrupt
 [ ] optionally preserve incomplete file
 [x] create temp file in current directory
