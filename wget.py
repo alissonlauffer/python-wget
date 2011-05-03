@@ -22,7 +22,7 @@ import tempfile
 import math
 
 
-__version__ = "0.8dev"
+__version__ = "0.8"
 
 
 def filename_from_url(url):
@@ -32,6 +32,34 @@ def filename_from_url(url):
         return None
     return fname
 
+def filename_from_headers(headers):
+    """Detect filename from Content-Disposition headers if present.
+   http://greenbytes.de/tech/tc2231/
+
+    :param: headers as dict, list or string
+    :return: filename from content-disposition header or None
+    """
+    if type(headers) in (str, unicode):
+        headers = headers.splitlines()
+    if type(headers) == list:
+        headers = dict([x.split(':', 1) for x in headers])
+    cdisp = headers.get("Content-Disposition")
+    if not cdisp:
+        return None
+    cdtype = cdisp.split(';')
+    if len(cdtype) == 1:
+        return None
+    if cdtype[0].strip().lower() not in ('inline', 'attachment'):
+        return None
+    # several filename params is illegal, but just in case
+    fnames = [x for x in cdtype[1:] if x.strip().startswith('filename=')]
+    if len(fnames) > 1:
+        return None
+    name = fnames[0].split('=')[1].strip(' \t"')
+    name = os.path.basename(name)
+    if not name:
+        return None
+    return name
 
 def get_console_width():
     """Return width of available window area. Autodetection works for
@@ -171,6 +199,9 @@ if __name__ == "__main__":
     os.unlink(tmpfile)
 
     (tmpfile, headers) = urllib.urlretrieve(url, tmpfile, progress_callback)
+    filenamealt = filename_from_headers(headers)
+    if filenamealt:
+        filename = filenamealt
     shutil.move(tmpfile, filename)
 
     print
@@ -182,8 +213,9 @@ features that require more tuits for urlretrieve API
 http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
 
 [x] autodetect filename from URL
-[ ] autodetect filename from headers - Content-Disposition
+[x] autodetect filename from headers - Content-Disposition
     http://greenbytes.de/tech/tc2231/
+[ ] make HEAD request to detect temp filename from Content-Disposition
 [ ] catch KeyboardInterrupt
 [ ] optionally preserve incomplete file
 [x] create temp file in current directory

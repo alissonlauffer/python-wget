@@ -1,5 +1,8 @@
 ChangeLog
 =========
+0.8 (2011-05-03)
+ * it detects filename from HTTP headers
+
 0.7 (2011-03-01)
  * compatibility fix for Python 2.5
  * limit width of progress bar to 100 chars
