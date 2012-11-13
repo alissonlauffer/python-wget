@@ -133,17 +133,68 @@ def bar_thermometer(current, total, width=80):
     shaded_dots = int(math.floor(float(current) / total * avail_dots))
     return '[' + '.'*shaded_dots + ' '*(avail_dots-shaded_dots) + ']'
 
+def bar_adaptive(current, total, width=80):
+    """Return progress bar string for given values in one of three
+    styles depending on available width:
+
+        [..  ] downloaded / total
+        downloaded / total
+        [.. ]
+
+    if total value is unknown or <= 0, show bytes counter using two
+    adaptive styles:
+
+        %s / unknown
+        %s
+
+    if there is not enough space on the screen, do not display anything
+
+    returned string doesn't include control characters like \r used to
+    place cursor at the beginning of the line to erase previous content.
+
+    this function leaves one free character at the end of string to
+    avoid automatic linefeed on Windows.
+    """
+
+    # process special case when total size is unknown and return immediately
+    if not total or total < 0:
+        msg = "%s / unknown" % current
+        if len(msg) < width:    # leaves one character to avoid linefeed
+            return msg
+        if len("%s" % current) < width:
+            return "%s" % current
+
+    min_bar_width = 3 # [.]
+
+    if width < min_bar_width+1:  # +1 reserved to avoid linefeed on Windows
+        return ''
+
+    size_width = len("%s" % total)
+    size_field_width = size_width*2 + 3 # 'xxxx / yyyy'
+
+    # [. ] 
+    if width < size_field_width+1:
+        return bar_thermometer(current, total, width-1)
+
+    full_width = min_bar_width+1+size_field_width
+    size_info = "%s / %s" % (current, total)
+    # padding with spaces
+    size_info = " "*(size_field_width-len(size_info)) + size_info
+
+    # downloaded / total 
+    if width < full_width+1:
+        return size_info
+
+    # [..  ] downloaded / total
+    bar_width = width-1-size_field_width-1
+    bar = bar_thermometer(current, total, bar_width)
+    return "%s %s" % (bar, size_info)
+
 def progress_callback(blocks, block_size, total_size):
     """callback function for urlretrieve that is called when connection is
     created and when once for each block
 
-    draws progress bar (one of free depending on available console wydth:
-    [..  ] downloaded / total
-    downloaded / total
-    [.. ]
-
-    do not display anything if there is not much space on the screen.
-    show bytes counter if total_size is unknown as many bytes as possible.
+    draws adaptive progress bar in terminal/console
 
     use sys.stdout.write() instead of "print,", because it allows one more
     symbol at the line end without linefeed on Windows
@@ -153,50 +204,11 @@ def progress_callback(blocks, block_size, total_size):
     :param total_size: in bytes, can be -1 if server doesn't return it
     """
     width = min(100, get_console_width())
-    size_width = len("%s" % total_size)
-    size_field_width = size_width*2 + 3 # 'xxxx / yyyy'
-    min_bar_width = 3 # [.]
 
-
-    # process special case and return immediately
-    if total_size <= 0:
-        msg = "\r%s / unknown" % (blocks * block_size)
-        if width-1 > 0:
-            sys.stdout.write(msg[:width-1]) # leave one character to avoid linefeed
-        return
-
-
-    total_blocks = math.ceil(float(total_size) / block_size)
-
-    # if we need to draw bar
-    full_info = (width >= min_bar_width+1+size_field_width+1)
-    #                              trailing +1 to avoid linefeed when printing
-    size_only = (not full_info and width > size_field_width)
-    bar_only = (not size_only and width > min_bar_width)
-
-    # drawing bar
-    if full_info:
-        bar_width = width-1-size_field_width-1
-    elif bar_only:
-        bar_width = width-1
-   
-    if full_info or bar_only:
-        bar = bar_thermometer(blocks, total_blocks, bar_width)
-
-    size_info = "%s / %s" % (min(blocks * block_size, total_size), total_size)
-    # padding with spaces
-    size_info = " "*(size_field_width-len(size_info)) + size_info
-    if full_info:
-        sys.stdout.write("\r%s %s" % (bar, size_info))
-    elif size_only:
-        sys.stdout.write("\r%s" % size_info)
-    elif bar_only:
-        sys.stdout.write("\r%s" % bar)
-    else:
-        # no space to draw even a lil' bar
-        # print blocks, block_size, total_size
-        return
-
+    current_size = min(blocks*block_size, total_size)
+    progress = bar_adaptive(current_size, total_size, width)
+    if progress:
+        sys.stdout.write("\r" + progress)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
