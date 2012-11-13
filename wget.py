@@ -61,6 +61,26 @@ def filename_from_headers(headers):
         return None
     return name
 
+def filename_fix_existing(filename):
+    """Expands name portion of filename with numeric ' (x)' suffix to
+    return filename that doesn't exist already.
+    """
+    dirname = '.' 
+    name, ext = filename.rsplit('.', 1)
+    names = [x for x in os.listdir(dirname) if x.startswith(name)]
+    names = [x.rsplit('.', 1)[0] for x in names]
+    suffixes = [x.replace(name, '') for x in names]
+    # filter suffixes that match ' (x)' pattern
+    suffixes = [x[2:-1] for x in suffixes
+                   if x.startswith(' (') and x.endswith(')')]
+    indexes  = [int(x) for x in suffixes
+                   if set(x) <= set('0123456789')]
+    idx = 1
+    if indexes:
+        idx += sorted(indexes)[-1]
+    return '%s (%d).%s' % (name, idx, ext)
+
+
 def get_console_width():
     """Return width of available window area. Autodetection works for
        Windows and POSIX platforms. Returns 80 for others
@@ -190,6 +210,7 @@ def bar_adaptive(current, total, width=80):
     bar = bar_thermometer(current, total, bar_width)
     return "%s %s" % (bar, size_info)
 
+
 def progress_callback(blocks, block_size, total_size):
     """callback function for urlretrieve that is called when connection is
     created and when once for each block
@@ -226,6 +247,9 @@ if __name__ == "__main__":
     filenamealt = filename_from_headers(headers)
     if filenamealt:
         filename = filenamealt
+    # add numeric ' (x)' suffix if filename already exists
+    if os.path.exists(filename):
+        filename = filename_fix_existing(filename)
     shutil.move(tmpfile, filename)
 
     print
@@ -245,13 +269,12 @@ http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
 [ ] catch KeyboardInterrupt
 [ ] optionally preserve incomplete file
 [x] create temp file in current directory
-[ ] rename temp file automatically if exists
 [ ] resume download (broken connection)
 [ ] resume download (incomplete file)
 [x] show progress indicator
     http://mail.python.org/pipermail/tutor/2005-May/038797.html
-[ ] do not overwrite downloaded file
-[ ] optionally rename downloaded file automatically if exists
+[x] do not overwrite downloaded file
+ [x] rename file automatically if exists
 [ ] optionally specify path for downloaded file
 
 [ ] options plan
@@ -265,4 +288,6 @@ http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
   File "C:\Python27\lib\urllib.py", line 283, in retrieve
     "of %i bytes" % (read, size), result)
 urllib.ContentTooShortError: retrieval incomplete: got only 15239952 out of 24807571 bytes
+
+[ ] test suite for unsafe filenames from url and from headers
 """
