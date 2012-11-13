@@ -43,12 +43,12 @@ def filename_from_url(url):
 
 def filename_from_headers(headers):
     """Detect filename from Content-Disposition headers if present.
-   http://greenbytes.de/tech/tc2231/
+    http://greenbytes.de/tech/tc2231/
 
     :param: headers as dict, list or string
     :return: filename from content-disposition header or None
     """
-    if type(headers) in (str, unicode):
+    if type(headers) == str:
         headers = headers.splitlines()
     if type(headers) == list:
         headers = dict([x.split(':', 1) for x in headers])
@@ -220,6 +220,9 @@ def bar_adaptive(current, total, width=80):
     return "%s %s" % (bar, size_info)
 
 
+__current_size = 0  # global state variable, which exists solely as a
+                    # workaround against Python 3.3.0 regression
+                    # http://bugs.python.org/issue16409
 def progress_callback(blocks, block_size, total_size):
     """callback function for urlretrieve that is called when connection is
     created and when once for each block
@@ -233,9 +236,18 @@ def progress_callback(blocks, block_size, total_size):
     :param block_size: in bytes
     :param total_size: in bytes, can be -1 if server doesn't return it
     """
+    global __current_size
+ 
     width = min(100, get_console_width())
 
-    current_size = min(blocks*block_size, total_size)
+    if sys.version_info[:3] == (3, 3, 0):  # regression workaround
+        if blocks == 0:  # first call
+            __current_size = 0
+        else:
+            __current_size += block_size
+        current_size = __current_size
+    else:
+        current_size = min(blocks*block_size, total_size)
     progress = bar_adaptive(current_size, total_size, width)
     if progress:
         sys.stdout.write("\r" + progress)
@@ -311,5 +323,6 @@ http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
     "of %i bytes" % (read, size), result)
 urllib.ContentTooShortError: retrieval incomplete: got only 15239952 out of 24807571 bytes
 
+[ ] find out if urlretrieve may return unicode headers
 [ ] test suite for unsafe filenames from url and from headers
 """
