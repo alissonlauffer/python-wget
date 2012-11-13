@@ -1,5 +1,8 @@
 ChangeLog
 =========
+1.0 (2012-11-13)
+ * it runs with Python 3
+
 0.9 (2012-11-13)
  * it renames file if it already exists
  * it can be used as a library

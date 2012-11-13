@@ -24,6 +24,8 @@ setup(
         'Environment :: Console',
         'License :: Public Domain',
         'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
         'Topic :: System :: Networking',
         'Topic :: Utilities',
     ],
@@ -33,6 +35,9 @@ setup(
     long_description= """
 ChangeLog
 =========
+1.0 (2012-11-13)
+ * it runs with Python 3
+
 0.9 (2012-11-13)
  * it renames file if it already exists
  * it can be used as a library
