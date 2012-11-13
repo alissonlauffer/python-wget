@@ -17,10 +17,18 @@ Also available under the terms of MIT license
 Copyright (c) 2010-2012 anatoly techtonik 
 """
 
-import sys, urllib, shutil, os, urlparse
+
+import sys, shutil, os
 import tempfile
 import math
 
+PY3K = sys.version_info >= (3, 0)
+if PY3K:
+  import urllib.request as urllib
+  import urllib.parse as urlparse
+else:
+  import urllib
+  import urlparse
 
 
 __version__ = "0.1dev"
@@ -267,10 +275,10 @@ if __name__ == "__main__":
     url = sys.argv[1]
     filename = download(url, progress_callback)
 
-    print
-    print "Saved under %s" % filename
+    print("")
+    print("Saved under %s" % filename)
 
-"""
+r"""
 features that require more tuits for urlretrieve API
 http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
 
