@@ -231,11 +231,14 @@ def progress_callback(blocks, block_size, total_size):
     if progress:
         sys.stdout.write("\r" + progress)
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        sys.exit("No download URL specified")
 
-    url = sys.argv[1]
+def download(url, callback=None):
+    """High level function, which downloads URL into tmp file in current
+    directory and then renames it to filename autodetected from either URL
+    or HTTP headers.
+
+    :return:  filename where URL is downloaded to
+    """
 
     filename = filename_from_url(url) or "."
     # get filename for temp file in current directory
@@ -243,7 +246,7 @@ if __name__ == "__main__":
     os.close(fd)
     os.unlink(tmpfile)
 
-    (tmpfile, headers) = urllib.urlretrieve(url, tmpfile, progress_callback)
+    (tmpfile, headers) = urllib.urlretrieve(url, tmpfile, callback)
     filenamealt = filename_from_headers(headers)
     if filenamealt:
         filename = filenamealt
@@ -252,9 +255,19 @@ if __name__ == "__main__":
         filename = filename_fix_existing(filename)
     shutil.move(tmpfile, filename)
 
+    #print headers
+    return filename
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        sys.exit("No download URL specified")
+
+    url = sys.argv[1]
+    filename = download(url, progress_callback)
+
     print
-    print headers
-    print "Saved under %s" % os.path.basename(filename)
+    print "Saved under %s" % filename
 
 """
 features that require more tuits for urlretrieve API
