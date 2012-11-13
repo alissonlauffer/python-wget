@@ -1,20 +1,20 @@
-""" Download utility as an easy way to get file from the net
+#!/usr/bin/env python
+"""
+Download utility as an easy way to get file from the net
  
-    python -m wget <URL>
-    python wget.py <URL>
+  python -m wget <URL>
+  python wget.py <URL>
 
-    Placed into Public Domain by anatoly techtonik
-    Also available under the terms of MIT license if you need
-    Copyright (c) 2010 anatoly techtonik <techtonik@gmail.com>
+Downloads: http://pypi.python.org/pypi/wget/
+Development: http://bitbucket.org/techtonik/python-wget/
 
-    Downloads: http://pypi.python.org/pypi/wget/
-    Development: http://bitbucket.org/techtonik/python-wget/
+To include this module into Python library, it is better
+to rename it to something like 'fetch' to avoid complains
+about missing options.
 
-
-    If this module will be included into Python library, it
-    is better be renamed to something like 'fetch' to avoid
-    complains about missing options.
-
+Public domain by anatoly techtonik <techtonik@gmail.com>
+Also available under the terms of MIT license
+Copyright (c) 2010-2012 anatoly techtonik 
 """
 
 import sys, urllib, shutil, os, urlparse
@@ -22,7 +22,8 @@ import tempfile
 import math
 
 
-__version__ = "0.9"
+
+__version__ = "0.1dev"
 
 
 def filename_from_url(url):

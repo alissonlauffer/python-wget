@@ -3,6 +3,7 @@ ChangeLog
 0.9 (2012-11-13)
  * it renames file if it already exists
  * it can be used as a library
+
    * download(url) returns filename
    * bar_adaptive() draws progress bar
    * bar_thermometer() simplified bar
