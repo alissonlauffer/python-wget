@@ -1,4 +1,4 @@
-""" Download utility as easy way to get file from internet
+""" Download utility as an easy way to get file from the net
  
     python -m wget <URL>
     python wget.py <URL>
@@ -118,6 +118,21 @@ def get_console_width():
 
     return 80
 
+
+def bar_thermometer(current, total, width=80):
+    """Return thermometer style progress bar string. `total` argument
+    can not be zero. The minimum size of bar returned is 3. Example:
+
+        [..........            ]
+
+    Control and trailing symbols (\r and spaces) are not included.
+    See `bar_adaptive` for more information.
+    """
+    # number of dots on thermometer scale
+    avail_dots = width-2
+    shaded_dots = int(math.floor(float(current) / total * avail_dots))
+    return '[' + '.'*shaded_dots + ' '*(avail_dots-shaded_dots) + ']'
+
 def progress_callback(blocks, block_size, total_size):
     """callback function for urlretrieve that is called when connection is
     created and when once for each block
@@ -166,10 +181,7 @@ def progress_callback(blocks, block_size, total_size):
         bar_width = width-1
    
     if full_info or bar_only:
-        # number of dots on thermometer scale
-        avail_dots = bar_width-2
-        shaded_dots = int(math.ceil(float(blocks) / total_blocks * avail_dots))
-        bar = "[%s%s]" % ("."*shaded_dots, " "*(avail_dots-shaded_dots))
+        bar = bar_thermometer(blocks, total_blocks, bar_width)
 
     size_info = "%s / %s" % (min(blocks * block_size, total_size), total_size)
     # padding with spaces
@@ -231,4 +243,14 @@ http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
 [ ] optionally specify path for downloaded file
 
 [ ] options plan
+[ ] clbr progress bar style
+[ ] process Python 2.x urllib.ContentTooShortError exception gracefully
+    (ideally retry and continue download)
+
+    (tmpfile, headers) = urllib.urlretrieve(url, tmpfile, progress_callback)
+  File "C:\Python27\lib\urllib.py", line 93, in urlretrieve
+    return _urlopener.retrieve(url, filename, reporthook, data)
+  File "C:\Python27\lib\urllib.py", line 283, in retrieve
+    "of %i bytes" % (read, size), result)
+urllib.ContentTooShortError: retrieval incomplete: got only 15239952 out of 24807571 bytes
 """
