@@ -41,7 +41,7 @@ Release Checklist
 =================
 
 [ ] update version in wget.py
-[ ] update ChangeLog in setup.py
+[x] update description in setup.py
 [ ] python setup.py sdist
 [ ] python setup.py upload
 
