@@ -14,7 +14,7 @@ about missing options.
 
 Public domain by anatoly techtonik <techtonik@gmail.com>
 Also available under the terms of MIT license
-Copyright (c) 2010-2012 anatoly techtonik 
+Copyright (c) 2010-2013 anatoly techtonik 
 """
 
 
@@ -31,7 +31,7 @@ else:
   import urlparse
 
 
-__version__ = "1.0"
+__version__ = "2.0dev"
 
 
 def filename_from_url(url):
@@ -223,7 +223,8 @@ def bar_adaptive(current, total, width=80):
 __current_size = 0  # global state variable, which exists solely as a
                     # workaround against Python 3.3.0 regression
                     # http://bugs.python.org/issue16409
-def progress_callback(blocks, block_size, total_size):
+                    # fixed in Python 3.3.1
+def progress_callback(blocks, block_size, total_size, bar_function):
     """callback function for urlretrieve that is called when connection is
     created and when once for each block
 
@@ -235,6 +236,7 @@ def progress_callback(blocks, block_size, total_size):
     :param blocks: number of blocks transferred so far
     :param block_size: in bytes
     :param total_size: in bytes, can be -1 if server doesn't return it
+    :param bar_function: another callback function to visualize progress
     """
     global __current_size
  
@@ -248,17 +250,18 @@ def progress_callback(blocks, block_size, total_size):
         current_size = __current_size
     else:
         current_size = min(blocks*block_size, total_size)
-    progress = bar_adaptive(current_size, total_size, width)
+    progress = bar_function(current_size, total_size, width)
     if progress:
         sys.stdout.write("\r" + progress)
 
 
-def download(url, callback=None):
+def download(url, bar=bar_adaptive):
     """High level function, which downloads URL into tmp file in current
     directory and then renames it to filename autodetected from either URL
     or HTTP headers.
 
-    :return:  filename where URL is downloaded to
+    :param bar: function to track download progress (visualize etc.)
+    :return:    filename where URL is downloaded to
     """
 
     filename = filename_from_url(url) or "."
@@ -267,7 +270,11 @@ def download(url, callback=None):
     os.close(fd)
     os.unlink(tmpfile)
 
-    (tmpfile, headers) = urllib.urlretrieve(url, tmpfile, callback)
+    def callback_charged(blocks, block_size, total_size):
+        # 'closure' to set bar drawing function in default callback
+        progress_callback(blocks, block_size, total_size, bar_function=bar)
+
+    (tmpfile, headers) = urllib.urlretrieve(url, tmpfile, callback_charged)
     filenamealt = filename_from_headers(headers)
     if filenamealt:
         filename = filenamealt
@@ -285,7 +292,7 @@ if __name__ == "__main__":
         sys.exit("No download URL specified")
 
     url = sys.argv[1]
-    filename = download(url, progress_callback)
+    filename = download(url)
 
     print("")
     print("Saved under %s" % filename)

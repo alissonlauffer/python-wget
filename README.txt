@@ -1,5 +1,33 @@
+Usage
+=====
+
+  python -m wget <URL>
+
+
+API Usage
+=========
+
+  >>> import wget
+  >>> url = 'http://www.futurecrew.com/skaven/song_files/mp3/razorback.mp3'
+  >>> filename = wget.download(url)
+  [.....................................................] 3841532 / 3841532>
+  >> filename
+  'razorback.mp3'
+
+The skew that you see above is a documented side effect.
+Alternative progress bar:
+
+  >>> wget.download(url, bar=bar_thermometer)
+
+
 ChangeLog
 =========
+2.0 (2013-04-25)
+ * it has API usage examples
+ * download(url, bar) gets bar parameter
+
+      * bar(current, total)
+
 1.0 (2012-11-13)
  * it runs with Python 3
 
