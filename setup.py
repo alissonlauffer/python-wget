@@ -18,7 +18,7 @@ setup(
     author='anatoly techtonik <techtonik@gmail.com>',
     url='http://bitbucket.org/techtonik/python-wget/',
 
-    description="python -m wget <URL>",
+    description="pure python download utility",
     license="Public Domain",
     classifiers=[
         'Environment :: Console',

@@ -73,10 +73,10 @@ ChangeLog
 Release Checklist
 =================
 
-[ ] update version in wget.py
-[x] update description in setup.py
-[ ] python setup.py sdist
-[ ] python setup.py upload
+| [ ] update version in wget.py
+| [x] update description in setup.py
+| [ ] python setup.py sdist
+| [ ] python setup.py upload
 
 -- 
 anatoly techtonik <techtonik@gmail.com>
