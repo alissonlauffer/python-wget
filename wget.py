@@ -199,11 +199,11 @@ def bar_adaptive(current, total, width=80):
     #
     # [x] describe the format of the progress bar
     # [x] describe min width for each data field
-    # [ ] set priorities for each element
-    # [ ] select elements to be shown
-    #   [ ] choose top priority element min_width < avail_width
-    #   [ ] lessen avail_width by value if min_width
-    #   [ ] exclude element and from priority list and repeat
+    # [x] set priorities for each element
+    # [x] select elements to be shown
+    #   [x] choose top priority element min_width < avail_width
+    #   [x] lessen avail_width by value if min_width
+    #   [x] exclude element from priority list and repeat
     
     # [.. ]  10/100
     # bbbbb sssssss
@@ -214,26 +214,30 @@ def bar_adaptive(current, total, width=80):
     }
     priority = ['bar', 'size']
 
-    if width < min_width['bar']+1:  # +1 reserved to avoid linefeed on Windows
-        return ''
+    # select elements to show
+    selected = []
+    avail = width
+    for field in priority:
+      if min_width[field] < avail:
+        selected.append(field)
+        avail -= min_width[field]+1   # +1 is for separator or for reserved space at
+                                      # the end of line to avoid linefeed on Windows
+    # render
+    output = ''
+    for field in selected:
 
-    # [. ] 
-    if width < min_width['size']+1:
-        return bar_thermometer(current, total, width-1)
+      if field == 'bar':  # [. ]
+        # bar takes its min width + all available space
+        output += bar_thermometer(current, total, min_width['bar']+avail)
+      elif field == 'size':
+        # size field has a constant width (min == max)
+        output += ("%s / %s" % (current, total)).rjust(min_width['size'])
 
-    full_width = min_width['bar']+1+min_width['size']
-    size_info = "%s / %s" % (current, total)
-    # padding with spaces
-    size_info = " "*(min_width['size']-len(size_info)) + size_info
+      selected = selected[1:]
+      if selected:
+        output += ' '  # add field separator
 
-    # downloaded / total 
-    if width < full_width+1:
-        return size_info
-
-    # [..  ] downloaded / total
-    bar_width = width-1-min_width['size']-1
-    bar = bar_thermometer(current, total, bar_width)
-    return "%s %s" % (bar, size_info)
+    return output
 
 # --/ console helpers
 

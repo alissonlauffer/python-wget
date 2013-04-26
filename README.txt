@@ -29,6 +29,7 @@ ChangeLog
    * download(url, bar) gets bar parameter
      * bar(current, total)
    * progress_callback is renamed to callback_progress
+   * it features an improved bar_adaptive algorithm
 
 1.0 (2012-11-13)
  * it runs with Python 3
