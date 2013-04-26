@@ -22,7 +22,7 @@ Alternative progress bar:
 
 ChangeLog
 =========
-2.0 (2013-04-25)
+2.0 (2013-04-26)
  * it shows percentage
  * it has usage examples
  * it changes if being used as a library
