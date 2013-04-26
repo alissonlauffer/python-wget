@@ -319,7 +319,7 @@ http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
 [ ] optionally specify path for downloaded file
 
 [ ] options plan
-[ ] clbr progress bar style
+[ ] clpbar progress bar style
 [ ] process Python 2.x urllib.ContentTooShortError exception gracefully
     (ideally retry and continue download)
 
