@@ -205,14 +205,15 @@ def bar_adaptive(current, total, width=80):
     #   [x] lessen avail_width by value if min_width
     #   [x] exclude element from priority list and repeat
     
-    # [.. ]  10/100
-    # bbbbb sssssss
+    #  10% [.. ]  10/100
+    # pppp bbbbb sssssss
 
     min_width = {
+      'percent': 4,  # 100%
       'bar': 3,      # [.]
       'size': len("%s" % total)*2 + 3, # 'xxxx / yyyy'
     }
-    priority = ['bar', 'size']
+    priority = ['percent', 'bar', 'size']
 
     # select elements to show
     selected = []
@@ -226,7 +227,10 @@ def bar_adaptive(current, total, width=80):
     output = ''
     for field in selected:
 
-      if field == 'bar':  # [. ]
+      if field == 'percent':
+        # fixed size width for percentage
+        output += ('%s%%' % (100 * current // total)).rjust(min_width['percent'])
+      elif field == 'bar':  # [. ]
         # bar takes its min width + all available space
         output += bar_thermometer(current, total, min_width['bar']+avail)
       elif field == 'size':

@@ -10,7 +10,7 @@ API Usage
   >>> import wget
   >>> url = 'http://www.futurecrew.com/skaven/song_files/mp3/razorback.mp3'
   >>> filename = wget.download(url)
-  [.....................................................] 3841532 / 3841532>
+  100% [................................................] 3841532 / 3841532>
   >> filename
   'razorback.mp3'
 
@@ -23,13 +23,15 @@ Alternative progress bar:
 ChangeLog
 =========
 2.0 (2013-04-25)
+ * it shows percentage
  * it has usage examples
- * it has changes when used as a library
+ * it changes if being used as a library
 
-   * download(url, bar) gets bar parameter
+   * download shows progress bar by default
+   * bar_adaptive gets improved algorithm
+   * download(url, bar) contains bar parameter
      * bar(current, total)
-   * progress_callback is renamed to callback_progress
-   * it features an improved bar_adaptive algorithm
+   * progress_callback is named callback_progress
 
 1.0 (2012-11-13)
  * it runs with Python 3
