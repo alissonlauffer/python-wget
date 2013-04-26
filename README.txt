@@ -23,10 +23,12 @@ Alternative progress bar:
 ChangeLog
 =========
 2.0 (2013-04-25)
- * it has API usage examples
- * download(url, bar) gets bar parameter
+ * it has usage examples
+ * it has changes when used as a library
 
-      * bar(current, total)
+   * download(url, bar) gets bar parameter
+     * bar(current, total)
+   * progress_callback is renamed to callback_progress
 
 1.0 (2012-11-13)
  * it runs with Python 3

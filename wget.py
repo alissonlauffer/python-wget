@@ -90,6 +90,8 @@ def filename_fix_existing(filename):
     return '%s (%d).%s' % (name, idx, ext)
 
 
+# --- terminal/console output helpers ---
+
 def get_console_width():
     """Return width of available window area. Autodetection works for
        Windows and POSIX platforms. Returns 80 for others
@@ -219,12 +221,14 @@ def bar_adaptive(current, total, width=80):
     bar = bar_thermometer(current, total, bar_width)
     return "%s %s" % (bar, size_info)
 
+# --/ console helpers
+
 
 __current_size = 0  # global state variable, which exists solely as a
                     # workaround against Python 3.3.0 regression
                     # http://bugs.python.org/issue16409
                     # fixed in Python 3.3.1
-def progress_callback(blocks, block_size, total_size, bar_function):
+def callback_progress(blocks, block_size, total_size, bar_function):
     """callback function for urlretrieve that is called when connection is
     created and when once for each block
 
@@ -270,11 +274,16 @@ def download(url, bar=bar_adaptive):
     os.close(fd)
     os.unlink(tmpfile)
 
+    # set progress monitoring callback
     def callback_charged(blocks, block_size, total_size):
-        # 'closure' to set bar drawing function in default callback
-        progress_callback(blocks, block_size, total_size, bar_function=bar)
+        # 'closure' to set bar drawing function in callback
+        callback_progress(blocks, block_size, total_size, bar_function=bar)
+    if bar:
+        callback = callback_charged
+    else:
+        callback = None
 
-    (tmpfile, headers) = urllib.urlretrieve(url, tmpfile, callback_charged)
+    (tmpfile, headers) = urllib.urlretrieve(url, tmpfile, callback)
     filenamealt = filename_from_headers(headers)
     if filenamealt:
         filename = filenamealt
@@ -320,11 +329,12 @@ http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
 
 [ ] options plan
 [ ] clpbar progress bar style
+_ 30.0Mb at  3.0 Mbps  eta:   0:00:20   30% [=====         ]
 [ ] test "bar \r" print with \r at the end of line on Windows
 [ ] process Python 2.x urllib.ContentTooShortError exception gracefully
     (ideally retry and continue download)
 
-    (tmpfile, headers) = urllib.urlretrieve(url, tmpfile, progress_callback)
+    (tmpfile, headers) = urllib.urlretrieve(url, tmpfile, callback_progress)
   File "C:\Python27\lib\urllib.py", line 93, in urlretrieve
     return _urlopener.retrieve(url, filename, reporthook, data)
   File "C:\Python27\lib\urllib.py", line 283, in retrieve
