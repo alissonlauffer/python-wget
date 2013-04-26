@@ -195,29 +195,43 @@ def bar_adaptive(current, total, width=80):
         if len("%s" % current) < width:
             return "%s" % current
 
-    min_bar_width = 3 # [.]
+    # --- adaptive layout algorithm ---
+    #
+    # [x] describe the format of the progress bar
+    # [x] describe min width for each data field
+    # [ ] set priorities for each element
+    # [ ] select elements to be shown
+    #   [ ] choose top priority element min_width < avail_width
+    #   [ ] lessen avail_width by value if min_width
+    #   [ ] exclude element and from priority list and repeat
+    
+    # [.. ]  10/100
+    # bbbbb sssssss
 
-    if width < min_bar_width+1:  # +1 reserved to avoid linefeed on Windows
+    min_width = {
+      'bar': 3,      # [.]
+      'size': len("%s" % total)*2 + 3, # 'xxxx / yyyy'
+    }
+    priority = ['bar', 'size']
+
+    if width < min_width['bar']+1:  # +1 reserved to avoid linefeed on Windows
         return ''
 
-    size_width = len("%s" % total)
-    size_field_width = size_width*2 + 3 # 'xxxx / yyyy'
-
     # [. ] 
-    if width < size_field_width+1:
+    if width < min_width['size']+1:
         return bar_thermometer(current, total, width-1)
 
-    full_width = min_bar_width+1+size_field_width
+    full_width = min_width['bar']+1+min_width['size']
     size_info = "%s / %s" % (current, total)
     # padding with spaces
-    size_info = " "*(size_field_width-len(size_info)) + size_info
+    size_info = " "*(min_width['size']-len(size_info)) + size_info
 
     # downloaded / total 
     if width < full_width+1:
         return size_info
 
     # [..  ] downloaded / total
-    bar_width = width-1-size_field_width-1
+    bar_width = width-1-min_width['size']-1
     bar = bar_thermometer(current, total, bar_width)
     return "%s %s" % (bar, size_info)
 
