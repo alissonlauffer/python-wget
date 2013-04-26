@@ -320,6 +320,7 @@ http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
 
 [ ] options plan
 [ ] clpbar progress bar style
+[ ] test "bar \r" print with \r at the end of line on Windows
 [ ] process Python 2.x urllib.ContentTooShortError exception gracefully
     (ideally retry and continue download)
 
