@@ -365,4 +365,11 @@ urllib.ContentTooShortError: retrieval incomplete: got only 15239952 out of 2480
 
 [ ] find out if urlretrieve may return unicode headers
 [ ] test suite for unsafe filenames from url and from headers
+
+[ ] security checks
+  [ ] MITM redirect from https URL
+  [ ] https certificate check
+  [ ] size+hash check helpers
+    [ ] fail if size is known and mismatch
+    [ ] fail if hash mismatch
 """
