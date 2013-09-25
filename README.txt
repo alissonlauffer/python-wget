@@ -75,6 +75,7 @@ Release Checklist
 
 | [ ] update version in wget.py
 | [x] update description in setup.py
+| [ ] python setup.py check -mrs
 | [ ] python setup.py sdist
 | [ ] python setup.py upload
 
