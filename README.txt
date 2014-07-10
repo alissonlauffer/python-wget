@@ -23,6 +23,7 @@ Alternative progress bar:
 ChangeLog
 =========
 2.1 (2014-07-10)
+ * it shows command line help
  * it downloads to specified file or directory
 
    * download(url, out, bar) contains out parameter
@@ -81,8 +82,7 @@ Release Checklist
 | [ ] update version in wget.py
 | [x] update description in setup.py
 | [ ] python setup.py check -mrs
-| [ ] python setup.py sdist
-| [ ] python setup.py upload
+| [ ] python setup.py sdist upload
 | [ ] tag hg version
 
 -- 
