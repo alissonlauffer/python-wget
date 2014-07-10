@@ -281,18 +281,20 @@ def callback_progress(blocks, block_size, total_size, bar_function):
         sys.stdout.write("\r" + progress)
 
 
-def download(url, bar=bar_adaptive):
+def download(url, out=None, bar=bar_adaptive):
     """High level function, which downloads URL into tmp file in current
     directory and then renames it to filename autodetected from either URL
     or HTTP headers.
 
     :param bar: function to track download progress (visualize etc.)
+    :param out: output filename or directory
     :return:    filename where URL is downloaded to
     """
-
-    filename = filename_from_url(url) or "."
+    names = dict(out=out)
+    names["url"] = filename_from_url(url)
     # get filename for temp file in current directory
-    (fd, tmpfile) = tempfile.mkstemp(".tmp", prefix=filename+".", dir=".")
+    prefix = (names["url"] or names["out"] or ".") + "."
+    (fd, tmpfile) = tempfile.mkstemp(".tmp", prefix=prefix, dir=".")
     os.close(fd)
     os.unlink(tmpfile)
 
@@ -306,9 +308,12 @@ def download(url, bar=bar_adaptive):
         callback = None
 
     (tmpfile, headers) = urllib.urlretrieve(url, tmpfile, callback)
-    filenamealt = filename_from_headers(headers)
-    if filenamealt:
-        filename = filenamealt
+    names["header"] = filename_from_headers(headers)
+    if os.path.isdir(names["out"]):
+        filename = names["header"] or names["url"]
+        filename = names["out"] + "/" + filename
+    else:
+        filename = names["out"] or names["header"] or names["url"]
     # add numeric ' (x)' suffix if filename already exists
     if os.path.exists(filename):
         filename = filename_fix_existing(filename)
@@ -322,6 +327,7 @@ usage = """\
 usage: wget.py [options] URL
 
 options:
+  -o --output FILE|DIR   output filename or directory
   -h --help
   --version
 """
@@ -332,8 +338,13 @@ if __name__ == "__main__":
     if "--version" in sys.argv:
         sys.exit("wget.py " + __version__)
 
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option("-o", "--output", dest="output")
+    (options, args) = parser.parse_args()
+
     url = sys.argv[1]
-    filename = download(url)
+    filename = download(args[0], out=options.output)
 
     print("")
     print("Saved under %s" % filename)
@@ -357,7 +368,7 @@ http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
     http://mail.python.org/pipermail/tutor/2005-May/038797.html
 [x] do not overwrite downloaded file
  [x] rename file automatically if exists
-[ ] optionally specify path for downloaded file
+[x] optionally specify path for downloaded file
 
 [ ] options plan
  [x] -h, --help, --version (CHAOS speccy)
@@ -378,6 +389,8 @@ urllib.ContentTooShortError: retrieval incomplete: got only 15239952 out of 2480
 [ ] test suite for unsafe filenames from url and from headers
 
 [ ] security checks
+  [ ] filename_from_url
+  [ ] filename_from_headers
   [ ] MITM redirect from https URL
   [ ] https certificate check
   [ ] size+hash check helpers
