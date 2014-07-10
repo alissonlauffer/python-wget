@@ -22,6 +22,11 @@ Alternative progress bar:
 
 ChangeLog
 =========
+2.1 (2014-07-10)
+ * it downloads to specified file or directory
+
+   * download(url, out, bar) contains out parameter
+
 2.0 (2013-04-26)
  * it shows percentage
  * it has usage examples
@@ -78,6 +83,7 @@ Release Checklist
 | [ ] python setup.py check -mrs
 | [ ] python setup.py sdist
 | [ ] python setup.py upload
+| [ ] tag hg version
 
 -- 
 anatoly techtonik <techtonik@gmail.com>
