@@ -31,7 +31,7 @@ else:
   import urlparse
 
 
-__version__ = "2.0"
+__version__ = "2.1dev"
 
 
 def filename_from_url(url):
@@ -318,9 +318,19 @@ def download(url, bar=bar_adaptive):
     return filename
 
 
+usage = """\
+usage: wget.py [options] URL
+
+options:
+  -h --help
+  --version
+"""
+
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        sys.exit("No download URL specified")
+    if len(sys.argv) < 2 or "-h" in sys.argv or "--help" in sys.argv:
+        sys.exit(usage)
+    if "--version" in sys.argv:
+        sys.exit("wget.py " + __version__)
 
     url = sys.argv[1]
     filename = download(url)
@@ -350,6 +360,7 @@ http://www.python.org/doc/2.6/library/urllib.html#urllib.urlretrieve
 [ ] optionally specify path for downloaded file
 
 [ ] options plan
+ [x] -h, --help, --version (CHAOS speccy)
 [ ] clpbar progress bar style
 _ 30.0Mb at  3.0 Mbps  eta:   0:00:20   30% [=====         ]
 [ ] test "bar \r" print with \r at the end of line on Windows
