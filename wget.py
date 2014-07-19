@@ -8,13 +8,12 @@ Download utility as an easy way to get file from the net
 Downloads: http://pypi.python.org/pypi/wget/
 Development: http://bitbucket.org/techtonik/python-wget/
 
-To include this module into Python library, it is better
-to rename it to something like 'fetch' to avoid complains
-about missing options.
+wget.py is not option compatible with Unix wget utility,
+to make command line interface intuitive for new people.
 
 Public domain by anatoly techtonik <techtonik@gmail.com>
 Also available under the terms of MIT license
-Copyright (c) 2010-2013 anatoly techtonik 
+Copyright (c) 2010-2014 anatoly techtonik
 """
 
 

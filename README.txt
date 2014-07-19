@@ -1,7 +1,10 @@
 Usage
 =====
 
-  python -m wget <URL>
+  python -m wget [options] <URL>
+
+  options:
+    -o --output FILE|DIR   output filename or directory
 
 
 API Usage
@@ -22,9 +25,12 @@ Alternative progress bar:
 
 ChangeLog
 =========
+2.2 (2014-07-19)
+ * it again can download without -o option
+
 2.1 (2014-07-10)
  * it shows command line help
- * it downloads to specified file or directory
+ * -o option allows to select output file/directory
 
    * download(url, out, bar) contains out parameter
 
