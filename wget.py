@@ -31,7 +31,7 @@ else:
   import urlparse
 
 
-__version__ = "2.1"
+__version__ = "2.2"
 
 
 def filename_from_url(url):
@@ -290,7 +290,8 @@ def download(url, out=None, bar=bar_adaptive):
     :param out: output filename or directory
     :return:    filename where URL is downloaded to
     """
-    names = dict(out=out)
+    names = dict()
+    names["out"] = out or ''
     names["url"] = filename_from_url(url)
     # get filename for temp file in current directory
     prefix = (names["url"] or names["out"] or ".") + "."
