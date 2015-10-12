@@ -13,7 +13,7 @@ to make command line interface intuitive for new people.
 
 Public domain by anatoly techtonik <techtonik@gmail.com>
 Also available under the terms of MIT license
-Copyright (c) 2010-2014 anatoly techtonik
+Copyright (c) 2010-2015 anatoly techtonik
 """
 
 
@@ -23,14 +23,14 @@ import math
 
 PY3K = sys.version_info >= (3, 0)
 if PY3K:
-  import urllib.request as urllib
+  import urllib.request as ulib
   import urllib.parse as urlparse
 else:
-  import urllib
+  import urllib as ulib
   import urlparse
 
 
-__version__ = "2.2"
+__version__ = "2.3dev"
 
 
 def filename_from_url(url):
@@ -129,7 +129,8 @@ def get_console_width():
                         ("dwMaximumWindowSize", DWORD)]
 
         sbi = CONSOLE_SCREEN_BUFFER_INFO()
-        ret = windll.kernel32.GetConsoleScreenBufferInfo(console_handle, byref(sbi))
+        ret = windll.kernel32.GetConsoleScreenBufferInfo(
+            console_handle, byref(sbi))
         if ret == 0:
             return 0
         return sbi.srWindow.Right+1
@@ -307,7 +308,7 @@ def download(url, out=None, bar=bar_adaptive):
     else:
         callback = None
 
-    (tmpfile, headers) = urllib.urlretrieve(url, tmpfile, callback)
+    (tmpfile, headers) = ulib.urlretrieve(url, tmpfile, callback)
     names["header"] = filename_from_headers(headers)
     if os.path.isdir(names["out"]):
         filename = names["header"] or names["url"]
