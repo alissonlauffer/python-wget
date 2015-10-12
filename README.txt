@@ -25,6 +25,10 @@ Alternative progress bar:
 
 ChangeLog
 =========
+2.3 (xxxx-xx-xx)
+ * it can download and save unicode filenames
+   https://bitbucket.org/techtonik/python-wget/issues/7
+
 2.2 (2014-07-19)
  * it again can download without -o option
 

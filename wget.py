@@ -33,12 +33,23 @@ else:
 __version__ = "2.3dev"
 
 
+def to_unicode(filename):
+    """:return: filename decoded from utf-8 to unicode"""
+    #
+    if PY3K:
+        # [ ] test this on Python 3 + (Windows, Linux)
+        # [ ] port filename_from_headers once this works
+        # [ ] add test to repository / Travis
+        return filename
+    else:
+        return unicode(filename, 'utf-8')
+
 def filename_from_url(url):
-    """:return: detected filename or None"""
+    """:return: detected filename as unicode or None"""
     fname = os.path.basename(urlparse.urlparse(url).path)
     if len(fname.strip(" \n\t.")) == 0:
         return None
-    return fname
+    return to_unicode(fname)
 
 def filename_from_headers(headers):
     """Detect filename from Content-Disposition headers if present.
@@ -73,7 +84,7 @@ def filename_fix_existing(filename):
     """Expands name portion of filename with numeric ' (x)' suffix to
     return filename that doesn't exist already.
     """
-    dirname = '.' 
+    dirname = u'.'
     name, ext = filename.rsplit('.', 1)
     names = [x for x in os.listdir(dirname) if x.startswith(name)]
     names = [x.rsplit('.', 1)[0] for x in names]
@@ -387,7 +398,15 @@ _ 30.0Mb at  3.0 Mbps  eta:   0:00:20   30% [=====         ]
 urllib.ContentTooShortError: retrieval incomplete: got only 15239952 out of 24807571 bytes
 
 [ ] find out if urlretrieve may return unicode headers
-[ ] test suite for unsafe filenames from url and from headers
+[ ] write files with unicode characters
+    https://bitbucket.org/techtonik/python-wget/issues/7/filename-issue
+  [x] Python 2, Windows
+  [ ] Python 3, Windows
+  [ ] Linux
+[ ] add automatic tests
+  [ ] specify unicode URL from command line
+  [ ] specify unicode output file from command line
+  [ ] test suite for unsafe filenames from url and from headers
 
 [ ] security checks
   [ ] filename_from_url
