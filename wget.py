@@ -16,7 +16,7 @@ Also available under the terms of MIT license
 Copyright (c) 2010-2015 anatoly techtonik
 """
 
-__version__ = "3.0"
+__version__ = "3.1dev"
 
 
 import sys, shutil, os
@@ -291,6 +291,19 @@ def callback_progress(blocks, block_size, total_size, bar_function):
         sys.stdout.write("\r" + progress)
 
 
+def detect_filename(url=None, out=None, headers=None, default="download.wget"):
+    """Return filename for saving file. If no filename is detected from output
+    argument, url or headers, return default (download.wget)
+    """
+    names = dict(out='', url='', headers='')
+    if out:
+        names["out"] = out or ''
+    if url:
+        names["url"] = filename_from_url(url) or ''
+    if headers:
+        names["headers"] = filename_from_headers(headers) or ''
+    return names["out"] or names["headers"] or names["url"] or default
+
 def download(url, out=None, bar=bar_adaptive):
     """High level function, which downloads URL into tmp file in current
     directory and then renames it to filename autodetected from either URL
@@ -300,11 +313,14 @@ def download(url, out=None, bar=bar_adaptive):
     :param out: output filename or directory
     :return:    filename where URL is downloaded to
     """
-    names = dict()
-    names["out"] = out or ''
-    names["url"] = filename_from_url(url)
+    # detect of out is a directory
+    outdir = None
+    if out and os.path.isdir(out):
+        outdir = out
+        out = None
+
     # get filename for temp file in current directory
-    prefix = (names["url"] or names["out"] or ".") + "."
+    prefix = detect_filename(url, out)
     (fd, tmpfile) = tempfile.mkstemp(".tmp", prefix=prefix, dir=".")
     os.close(fd)
     os.unlink(tmpfile)
@@ -319,12 +335,10 @@ def download(url, out=None, bar=bar_adaptive):
         callback = None
 
     (tmpfile, headers) = ulib.urlretrieve(url, tmpfile, callback)
-    names["header"] = filename_from_headers(headers)
-    if os.path.isdir(names["out"]):
-        filename = names["header"] or names["url"]
-        filename = names["out"] + "/" + filename
-    else:
-        filename = names["out"] or names["header"] or names["url"]
+    filename = detect_filename(url, out, headers)
+    if outdir:
+        filename = outdir + "/" + filename
+
     # add numeric ' (x)' suffix if filename already exists
     if os.path.exists(filename):
         filename = filename_fix_existing(filename)
