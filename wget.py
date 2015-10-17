@@ -70,7 +70,7 @@ def win32_utf8_argv():
     return result
 
 
-# enable unicode output to windows console in Python 2.x
+# enable unicode output to windows console
 # https://stackoverflow.com/questions/878972/windows-cmd-encoding-change-causes-python-crash
 def win32_unicode_console():
     import codecs
@@ -160,12 +160,16 @@ def win32_unicode_console():
                 def write(self, text):
                     try:
                         if self._hConsole is None:
-                            if isinstance(text, unicode):
+                            if not PY3K and isinstance(text, unicode):
+                                text = text.encode('utf-8')
+                            elif PY3K and isinstance(text, str):
                                 text = text.encode('utf-8')
                             self._stream.write(text)
                         else:
-                            if not isinstance(text, unicode):
+                            if not PY3K and not isinstance(text, unicode):
                                 text = str(text).decode('utf-8')
+                            elif PY3K and not isinstance(text, str):
+                                text = text.decode('utf-8')
                             remaining = len(text)
                             while remaining:
                                 n = DWORD(0)
@@ -547,6 +551,8 @@ if __name__ == "__main__":
     # patch Python 2.x to read unicode from command line
     if not PY3K and sys.platform == "win32":
         sys.argv = win32_utf8_argv()
+    # patch Python to write unicode characters to console
+    if sys.platform == "win32":
         win32_unicode_console()
 
     from optparse import OptionParser

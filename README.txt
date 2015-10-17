@@ -25,10 +25,10 @@ Alternative progress bar:
 
 ChangeLog
 =========
-3.1 (xxxx-xx-xx)
+3.1 (2015-10-18)
  * it saves unknown files under download.wget filename
    https://bitbucket.org/techtonik/python-wget/issues/6
- * it shows unicode chars in Windows console
+ * it prints unicode chars to Windows console
  * it downloads unicode urls with Python 3
 
 3.0 (2015-10-17)
