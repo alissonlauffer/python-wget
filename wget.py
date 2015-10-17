@@ -16,7 +16,7 @@ Also available under the terms of MIT license
 Copyright (c) 2010-2015 anatoly techtonik
 """
 
-__version__ = "3.1dev"
+__version__ = "3.1"
 
 
 import sys, shutil, os
@@ -32,9 +32,9 @@ else:
   import urlparse
 
 
-# --- workaround for Python misbehavior ---
+# --- workarounds for Python misbehavior ---
 
-# enable passing unicode argument from command line in Python 2.x
+# enable passing unicode arguments from command line in Python 2.x
 # https://stackoverflow.com/questions/846850/read-unicode-characters
 def win32_utf8_argv():
     """Uses shell32.GetCommandLineArgvW to get sys.argv as a list of Unicode
@@ -68,6 +68,140 @@ def win32_utf8_argv():
         for i in range(start, argnum):
             result.append(argv[i].encode('utf-8'))
     return result
+
+
+# enable unicode output to windows console in Python 2.x
+# https://stackoverflow.com/questions/878972/windows-cmd-encoding-change-causes-python-crash
+def win32_unicode_console():
+    import codecs
+    from ctypes import WINFUNCTYPE, windll, POINTER, byref, c_int
+    from ctypes.wintypes import BOOL, HANDLE, DWORD, LPWSTR, LPCWSTR, LPVOID
+
+    original_stderr = sys.stderr
+
+    # Output exceptions in this code to original_stderr, so that we can at least see them
+    def _complain(message):
+        original_stderr.write(message if isinstance(message, str) else repr(message))
+        original_stderr.write('\n')
+
+    codecs.register(lambda name: codecs.lookup('utf-8') if name == 'cp65001' else None)
+
+    try:
+        GetStdHandle = WINFUNCTYPE(HANDLE, DWORD)(("GetStdHandle", windll.kernel32))
+        STD_OUTPUT_HANDLE = DWORD(-11)
+        STD_ERROR_HANDLE = DWORD(-12)
+        GetFileType = WINFUNCTYPE(DWORD, DWORD)(("GetFileType", windll.kernel32))
+        FILE_TYPE_CHAR = 0x0002
+        FILE_TYPE_REMOTE = 0x8000
+        GetConsoleMode = WINFUNCTYPE(BOOL, HANDLE, POINTER(DWORD))(("GetConsoleMode", windll.kernel32))
+        INVALID_HANDLE_VALUE = DWORD(-1).value
+
+        def not_a_console(handle):
+            if handle == INVALID_HANDLE_VALUE or handle is None:
+                return True
+            return ((GetFileType(handle) & ~FILE_TYPE_REMOTE) != FILE_TYPE_CHAR
+                    or GetConsoleMode(handle, byref(DWORD())) == 0)
+
+        old_stdout_fileno = None
+        old_stderr_fileno = None
+        if hasattr(sys.stdout, 'fileno'):
+            old_stdout_fileno = sys.stdout.fileno()
+        if hasattr(sys.stderr, 'fileno'):
+            old_stderr_fileno = sys.stderr.fileno()
+
+        STDOUT_FILENO = 1
+        STDERR_FILENO = 2
+        real_stdout = (old_stdout_fileno == STDOUT_FILENO)
+        real_stderr = (old_stderr_fileno == STDERR_FILENO)
+
+        if real_stdout:
+            hStdout = GetStdHandle(STD_OUTPUT_HANDLE)
+            if not_a_console(hStdout):
+                real_stdout = False
+
+        if real_stderr:
+            hStderr = GetStdHandle(STD_ERROR_HANDLE)
+            if not_a_console(hStderr):
+                real_stderr = False
+
+        if real_stdout or real_stderr:
+            WriteConsoleW = WINFUNCTYPE(BOOL, HANDLE, LPWSTR, DWORD, POINTER(DWORD), LPVOID)(("WriteConsoleW", windll.kernel32))
+
+            class UnicodeOutput:
+                def __init__(self, hConsole, stream, fileno, name):
+                    self._hConsole = hConsole
+                    self._stream = stream
+                    self._fileno = fileno
+                    self.closed = False
+                    self.softspace = False
+                    self.mode = 'w'
+                    self.encoding = 'utf-8'
+                    self.name = name
+                    self.flush()
+
+                def isatty(self):
+                    return False
+
+                def close(self):
+                    # don't really close the handle, that would only cause problems
+                    self.closed = True
+
+                def fileno(self):
+                    return self._fileno
+
+                def flush(self):
+                    if self._hConsole is None:
+                        try:
+                            self._stream.flush()
+                        except Exception as e:
+                            _complain("%s.flush: %r from %r" % (self.name, e, self._stream))
+                            raise
+
+                def write(self, text):
+                    try:
+                        if self._hConsole is None:
+                            if isinstance(text, unicode):
+                                text = text.encode('utf-8')
+                            self._stream.write(text)
+                        else:
+                            if not isinstance(text, unicode):
+                                text = str(text).decode('utf-8')
+                            remaining = len(text)
+                            while remaining:
+                                n = DWORD(0)
+                                # There is a shorter-than-documented limitation on the
+                                # length of the string passed to WriteConsoleW (see
+                                # <http://tahoe-lafs.org/trac/tahoe-lafs/ticket/1232>.
+                                retval = WriteConsoleW(self._hConsole, text, min(remaining, 10000), byref(n), None)
+                                if retval == 0 or n.value == 0:
+                                    raise IOError("WriteConsoleW returned %r, n.value = %r" % (retval, n.value))
+                                remaining -= n.value
+                                if not remaining:
+                                    break
+                                text = text[n.value:]
+                    except Exception as e:
+                        _complain("%s.write: %r" % (self.name, e))
+                        raise
+
+                def writelines(self, lines):
+                    try:
+                        for line in lines:
+                            self.write(line)
+                    except Exception as e:
+                        _complain("%s.writelines: %r" % (self.name, e))
+                        raise
+
+            if real_stdout:
+                sys.stdout = UnicodeOutput(hStdout, None, STDOUT_FILENO, '<Unicode console stdout>')
+            else:
+                sys.stdout = UnicodeOutput(None, sys.stdout, old_stdout_fileno, '<Unicode redirected stdout>')
+
+            if real_stderr:
+                sys.stderr = UnicodeOutput(hStderr, None, STDERR_FILENO, '<Unicode console stderr>')
+            else:
+                sys.stderr = UnicodeOutput(None, sys.stderr, old_stderr_fileno, '<Unicode redirected stderr>')
+    except Exception as e:
+        _complain("exception %r while fixing up sys.stdout and sys.stderr" % (e,))
 
 
 # --- helpers ---
@@ -406,6 +540,7 @@ if __name__ == "__main__":
     # patch Python 2.x to read unicode from command line
     if not PY3K and sys.platform == "win32":
         sys.argv = win32_utf8_argv()
+        win32_unicode_console()
 
     from optparse import OptionParser
     parser = OptionParser()

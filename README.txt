@@ -28,6 +28,7 @@ ChangeLog
 3.1 (xxxx-xx-xx)
  * it saves unknown files under download.wget filename
    https://bitbucket.org/techtonik/python-wget/issues/6
+ * it shows unicode chars in windows console
 
 3.0 (2015-10-17)
  * it can download and save unicode filenames
