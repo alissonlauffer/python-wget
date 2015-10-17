@@ -32,6 +32,46 @@ else:
   import urlparse
 
 
+# --- workaround for Python misbehavior ---
+
+# enable passing unicode argument from command line in Python 2.x
+# https://stackoverflow.com/questions/846850/read-unicode-characters
+def win32_utf8_argv():
+    """Uses shell32.GetCommandLineArgvW to get sys.argv as a list of Unicode
+    strings.
+
+    Versions 2.x of Python don't support Unicode in sys.argv on
+    Windows, with the underlying Windows API instead replacing multi-byte
+    characters with '?'.
+    """
+
+    from ctypes import POINTER, byref, cdll, c_int, windll
+    from ctypes.wintypes import LPCWSTR, LPWSTR
+
+    GetCommandLineW = cdll.kernel32.GetCommandLineW
+    GetCommandLineW.argtypes = []
+    GetCommandLineW.restype = LPCWSTR
+
+    CommandLineToArgvW = windll.shell32.CommandLineToArgvW
+    CommandLineToArgvW.argtypes = [LPCWSTR, POINTER(c_int)]
+    CommandLineToArgvW.restype = POINTER(LPWSTR)
+
+    cmd = GetCommandLineW()
+    argc = c_int(0)
+    argv = CommandLineToArgvW(cmd, byref(argc))
+    argnum = argc.value
+    sysnum = len(sys.argv)
+    result = []
+    if argnum > 0:
+        # Remove Python executable and commands if present
+        start = argnum - sysnum
+        for i in range(start, argnum):
+            result.append(argv[i].encode('utf-8'))
+    return result
+
+
+# --- helpers ---
+
 def to_unicode(filename):
     """:return: filename decoded from utf-8 to unicode"""
     #
@@ -362,6 +402,10 @@ if __name__ == "__main__":
         sys.exit(usage)
     if "--version" in sys.argv:
         sys.exit("wget.py " + __version__)
+
+    # patch Python 2.x to read unicode from command line
+    if not PY3K and sys.platform == "win32":
+        sys.argv = win32_utf8_argv()
 
     from optparse import OptionParser
     parser = OptionParser()
