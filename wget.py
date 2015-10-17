@@ -16,6 +16,8 @@ Also available under the terms of MIT license
 Copyright (c) 2010-2015 anatoly techtonik
 """
 
+__version__ = "3.0"
+
 
 import sys, shutil, os
 import tempfile
@@ -28,9 +30,6 @@ if PY3K:
 else:
   import urllib as ulib
   import urlparse
-
-
-__version__ = "2.3dev"
 
 
 def to_unicode(filename):

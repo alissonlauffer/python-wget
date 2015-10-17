@@ -25,7 +25,7 @@ Alternative progress bar:
 
 ChangeLog
 =========
-2.3 (xxxx-xx-xx)
+3.0 (2015-10-17)
  * it can download and save unicode filenames
    https://bitbucket.org/techtonik/python-wget/issues/7
 
