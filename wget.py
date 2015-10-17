@@ -508,7 +508,14 @@ def download(url, out=None, bar=bar_adaptive):
     else:
         callback = None
 
-    (tmpfile, headers) = ulib.urlretrieve(url, tmpfile, callback)
+    if PY3K:
+        # Python 3 can not quote URL as needed
+        binurl = list(urlparse.urlsplit(url))
+        binurl[2] = urlparse.quote(binurl[2])
+        binurl = urlparse.urlunsplit(binurl)
+    else:
+        binurl = url
+    (tmpfile, headers) = ulib.urlretrieve(binurl, tmpfile, callback)
     filename = detect_filename(url, out, headers)
     if outdir:
         filename = outdir + "/" + filename
@@ -593,7 +600,7 @@ urllib.ContentTooShortError: retrieval incomplete: got only 15239952 out of 2480
 [ ] write files with unicode characters
     https://bitbucket.org/techtonik/python-wget/issues/7/filename-issue
   [x] Python 2, Windows
-  [ ] Python 3, Windows
+  [x] Python 3, Windows
   [ ] Linux
 [ ] add automatic tests
   [ ] specify unicode URL from command line
