@@ -219,7 +219,10 @@ def to_unicode(filename):
         # [ ] add test to repository / Travis
         return filename
     else:
-        return unicode(filename, 'utf-8')
+        if isinstance(filename, unicode): 
+            return filename
+        else:
+            return unicode(filename, 'utf-8')
 
 def filename_from_url(url):
     """:return: detected filename as unicode or None"""
