@@ -25,6 +25,10 @@ Alternative progress bar:
 
 ChangeLog
 =========
+3.2 (2015-10-22)
+ * download(url) can again be unicode on Python 2.7
+   https://bitbucket.org/techtonik/python-wget/issues/8
+
 3.1 (2015-10-18)
  * it saves unknown files under download.wget filename
    https://bitbucket.org/techtonik/python-wget/issues/6

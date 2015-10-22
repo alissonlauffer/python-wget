@@ -16,7 +16,7 @@ Also available under the terms of MIT license
 Copyright (c) 2010-2015 anatoly techtonik
 """
 
-__version__ = "3.1"
+__version__ = "3.2"
 
 
 import sys, shutil, os
@@ -226,6 +226,7 @@ def to_unicode(filename):
 
 def filename_from_url(url):
     """:return: detected filename as unicode or None"""
+    # [ ] test urlparse behavior with unicode url
     fname = os.path.basename(urlparse.urlparse(url).path)
     if len(fname.strip(" \n\t.")) == 0:
         return None
